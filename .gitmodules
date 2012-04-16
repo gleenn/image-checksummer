@@ -1,0 +1,3 @@
+[submodule "vendor/underscore-enhancements"]
+	path = vendor/underscore-enhancements
+	url = git@github.com:gleenn/underscore-enhancements.git

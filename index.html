@@ -3,6 +3,7 @@
 <head>
     <script src="jquery.js"></script>
     <script src="underscore.js"></script>
+    <script src="vendor/underscore-enhancements/underscore-enhancements.js"></script>
     <script>
         ImageChecksumer = function(imageBlock) {
             var self = this;
@@ -20,25 +21,32 @@
 
             self.image.src = self.origImage.src;
 
-            self.checksum = function() {
-                var dataz = self.context.getImageData();
-                var avgRed = 0;
-                var avgGreen = 0;
-                var avgBlue = 0;
+            self.checksum = function(callback) {
+                $(self.image).load(function() {
+                    var dataz = self.context.getImageData(0, 0, self.image.width - 1, self.image.height - 1).data;
+                    var avgRed = 0;
+                    var avgGreen = 0;
+                    var avgBlue = 0;
 
-                $.each(dataz, function(index, element) {
-                   console.log(element);
+                    for (var i = 0; i < dataz.length; i += 4) {
+                        avgRed += dataz[i];
+                        avgGreen += dataz[i + 1];
+                        avgBlue += dataz[i + 2];
+                    }
+
+                    var numPixels = dataz.length / 4;
+                    console.log(numPixels);
+                    callback([avgRed / numPixels, avgGreen / numPixels, avgBlue / numPixels]);
                 });
-
-                return [avgRed, avgGreen, avgBlue];
             };
             return self;
         };
 
         $(function() {
             $.each($(".img_block"), function(index, imgBlock) {
-                var checksum = (new ImageChecksumer($(imgBlock))).checksum();
-                $(imgBlock).append("<p>checksum: " + checksum + "</p>");
+                new ImageChecksumer($(imgBlock)).checksum(function(sum) {
+                    $(imgBlock).append("<p>checksum: " + sum + "</p>");
+                });
             });
         });
 
