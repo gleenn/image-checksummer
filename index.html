@@ -11,7 +11,6 @@
             self.green = 0;
             self.blue = 0;
             self.collapse = function() {
-              console.log(self.red, self.green, self.blue);
               return (self.red + self.green + self.blue) / (3*255);
             };
             return self;
@@ -41,25 +40,22 @@
 
             self.reduceImage = function(imageData, width, height, n) {
                 var result = [];
-                var data = _.mapn(imageData.data, 4);
+                var data = imageData.data;
                 var chunkWidth = Math.floor(width / n);
                 var chunkHeight = Math.floor(height / n);
                 _.times(n, function() {result.push(new Array(n))});
-                console.log(data);
                 for (var j = 0; j < n; j++) {
                     for (var i = 0; i < n; i++) {
                         var pixel = new window.Pixel();
                             for (var h = j*chunkHeight; h < j*chunkHeight + chunkHeight; h++) {
                                 for (var w = i*chunkWidth; w < i*chunkWidth + chunkWidth; w++) {
-                                var pixelIndex = w + h*width;
-                                console.log(i, j, w, h, "pixelIndex: " + pixelIndex);
-                                console.log(data[pixelIndex]);
-                                pixel.red   += data[pixelIndex][0];
-                                pixel.green += data[pixelIndex][1];
-                                pixel.blue  += data[pixelIndex][2];
+                                var pixelIndex = 4*(w + h*width);
+                                pixel.red   += data[pixelIndex + 0];
+                                pixel.green += data[pixelIndex + 1];
+                                pixel.blue  += data[pixelIndex + 2];
                             }
                         }
-                        result[i][j] = pixel.collapse();
+                        result[i][j] = pixel.collapse()/(chunkWidth*chunkHeight);
                     }
                 }
                 return result;
@@ -69,10 +65,7 @@
 
             function sum(imageData, width, height) {
                 var data = imageData.data;
-
                 return self.reduceImage(data, width, height);
-//                var result = [avgRed / numPixels, avgGreen / numPixels, avgBlue / numPixels];
-//                return result;
             }
         };
 
