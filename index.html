@@ -5,6 +5,17 @@
     <script src="vendor/underscore.js"></script>
     <script src="vendor/underscore-enhancements/underscore-enhancements.js"></script>
     <script>
+        Pixel = function() {
+            var self = this;
+            self.red = 0;
+            self.green = 0;
+            self.blue = 0;
+            self.collapse = function() {
+              console.log(self.red, self.green, self.blue);
+              return (self.red + self.green + self.blue) / (3*255);
+            };
+            return self;
+        };
         ImageChecksumer = function(imageBlock) {
             var self = this;
             self.imageBlock = imageBlock;
@@ -23,26 +34,44 @@
 
             self.checksum = function(callback) {
                 $(self.image).load(function() {
-                    var dataz = self.context.getImageData(0, 0, self.image.width - 1, self.image.height - 1).data;
-                    callback(sum(dataz));
+                    var imageData = self.context.getImageData(0, 0, self.image.width, self.image.height);
+                    callback(self.reduceImage(imageData, self.origImage.width, self.origImage.height, 2));
                 });
             };
+
+            self.reduceImage = function(imageData, width, height, n) {
+                var result = [];
+                var data = imageData.data;
+                var chunkWidth = Math.floor(width / n);
+                var chunkHeight = Math.floor(height / n);
+                _.times(n, function() {result.push(new Array(n))});
+                for (var j = 0; j < n; j++) {
+                    for (var i = 0; i < n; i++) {
+                        var pixel = new Pixel();
+                            for (var h = j*chunkHeight; h < j*chunkHeight + chunkHeight; h++) {
+                                for (var w = i*chunkWidth; w < i*chunkWidth + chunkWidth; w++) {
+                                var pixelIndex = w + h*width;
+                                console.log(i, j, w, h, "pixelIndex: " + pixelIndex);
+                                console.log(data[pixelIndex]);
+                                pixel.red   += data[pixelIndex][0];
+                                pixel.green += data[pixelIndex][1];
+                                pixel.blue  += data[pixelIndex][2];
+                            }
+                        }
+                        result[i][j] = pixel.collapse();
+                    }
+                }
+                return result;
+            };
+
             return self;
 
-            function sum(data) {
-                var avgRed = 0;
-                var avgGreen = 0;
-                var avgBlue = 0;
+            function sum(imageData, width, height) {
+                var data = imageData.data;
 
-                for (var i = 0; i < data.length; i += 4) {
-                    avgRed += data[i];
-                    avgGreen += data[i + 1];
-                    avgBlue += data[i + 2];
-                }
-
-                var numPixels = data.length / 4;
-                var result = [avgRed / numPixels, avgGreen / numPixels, avgBlue / numPixels];
-                return result;
+                return self.reduceImage(data, width, height);
+//                var result = [avgRed / numPixels, avgGreen / numPixels, avgBlue / numPixels];
+//                return result;
             }
         };
 
@@ -59,13 +88,16 @@
     </style>
 </head>
 <body>
-<div class="img_block"><img src="large_flowers.jpg"/>
+<div class="ximg_block"><img src="large_flowers.jpg"/>
     <canvas></canvas>
 </div>
-<div class="img_block"><img src="medium_flowers.jpg"/>
+<div class="ximg_block"><img src="medium_flowers.jpg"/>
     <canvas></canvas>
 </div>
-<div class="img_block"><img src="small_flowers.jpg"/>
+<div class="ximg_block"><img src="small_flowers.jpg"/>
+    <canvas></canvas>
+</div>
+<div class="img_block"><img src="test_image.bmp"/>
     <canvas></canvas>
 </div>
 </body>
