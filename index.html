@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="jquery.js"></script>
+    <script src="underscore.js"></script>
+    <script>
+        ImageChecksumer = function(imageBlock) {
+            var self = this;
+            self.imageBlock = imageBlock;
+            self.image = new Image();
+            self.origImage = $(imageBlock).find("img").get(0);
+            self.canvas = $(imageBlock).find("canvas").get(0);
+            self.context = self.canvas.getContext("2d");
+
+            $(self.image).load(function() {
+                self.canvas.setAttribute("height", self.origImage.height);
+                self.canvas.setAttribute("width", self.origImage.width);
+                self.context.drawImage(self.image, 0, 0);
+            });
+                self.image.src = self.origImage.src;
+
+            self.checksum = function() {
+//                self.context.height = self.image.height;
+//                self.context.width = self.image.width;
+                return 0;
+            };
+            return self;
+        };
+
+        $(function() {
+            $.each($(".img_block"), function(index, imgBlock) {
+                var checksum = (new ImageChecksumer($(imgBlock))).checksum();
+                $(imgBlock).append("<p>checksum: " + checksum + "</p>");
+            });
+        });
+
+    </script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+<div class="img_block"><img src="large_flowers.jpg"/>
+    <canvas></canvas>
+</div>
+<div class="img_block"><img src="medium_flowers.jpg"/>
+    <canvas></canvas>
+</div>
+<div class="img_block"><img src="small_flowers.jpg"/>
+    <canvas></canvas>
+</div>
+</body>
+</html>
