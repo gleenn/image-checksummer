@@ -24,22 +24,26 @@
             self.checksum = function(callback) {
                 $(self.image).load(function() {
                     var dataz = self.context.getImageData(0, 0, self.image.width - 1, self.image.height - 1).data;
-                    var avgRed = 0;
-                    var avgGreen = 0;
-                    var avgBlue = 0;
-
-                    for (var i = 0; i < dataz.length; i += 4) {
-                        avgRed += dataz[i];
-                        avgGreen += dataz[i + 1];
-                        avgBlue += dataz[i + 2];
-                    }
-
-                    var numPixels = dataz.length / 4;
-                    console.log(numPixels);
-                    callback([avgRed / numPixels, avgGreen / numPixels, avgBlue / numPixels]);
+                    callback(sum(dataz));
                 });
             };
             return self;
+
+            function sum(data) {
+                var avgRed = 0;
+                var avgGreen = 0;
+                var avgBlue = 0;
+
+                for (var i = 0; i < data.length; i += 4) {
+                    avgRed += data[i];
+                    avgGreen += data[i + 1];
+                    avgBlue += data[i + 2];
+                }
+
+                var numPixels = data.length / 4;
+                var result = [avgRed / numPixels, avgGreen / numPixels, avgBlue / numPixels];
+                return result;
+            }
         };
 
         $(function() {
