@@ -17,12 +17,20 @@
                 self.canvas.setAttribute("width", self.origImage.width);
                 self.context.drawImage(self.image, 0, 0);
             });
-                self.image.src = self.origImage.src;
+
+            self.image.src = self.origImage.src;
 
             self.checksum = function() {
-//                self.context.height = self.image.height;
-//                self.context.width = self.image.width;
-                return 0;
+                var dataz = self.context.getImageData();
+                var avgRed = 0;
+                var avgGreen = 0;
+                var avgBlue = 0;
+
+                $.each(dataz, function(index, element) {
+                   console.log(element);
+                });
+
+                return [avgRed, avgGreen, avgBlue];
             };
             return self;
         };
